@@ -14,6 +14,7 @@ export interface RepurposeResult {
   twitterThread: TwitterTweet[];
   linkedinPost: string;
   tiktokScript: TikTokScene[];
+  whatsappMessage: string;
 }
 
 export interface Generation {
@@ -23,6 +24,7 @@ export interface Generation {
   twitter_thread: TwitterTweet[] | null;
   linkedin_post: string | null;
   tiktok_script: TikTokScene[] | null;
+  whatsapp_message: string | null;
   created_at: string;
 }
 

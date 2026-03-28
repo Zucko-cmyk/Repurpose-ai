@@ -17,6 +17,10 @@ interface TikTokCardProps {
   scenes: TikTokScene[];
 }
 
+interface WhatsAppCardProps {
+  message: string;
+}
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -49,11 +53,6 @@ export function TwitterCard({ tweets }: TwitterCardProps) {
     window.open(url, "_blank");
   }
 
-  function handleWhatsApp() {
-    const url = `https://wa.me/?text=${encodeURIComponent(fullThread)}`;
-    window.open(url, "_blank");
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -78,13 +77,6 @@ export function TwitterCard({ tweets }: TwitterCardProps) {
           >
             <ExternalLink className="h-3.5 w-3.5" />
             <span>Opublikuj na X</span>
-          </button>
-          <button
-            onClick={handleWhatsApp}
-            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            <span>WhatsApp</span>
           </button>
         </div>
       </div>
@@ -116,11 +108,6 @@ export function LinkedInCard({ post }: LinkedInCardProps) {
     window.open("https://www.linkedin.com/feed/", "_blank");
   }
 
-  function handleWhatsApp() {
-    const url = `https://wa.me/?text=${encodeURIComponent(post)}`;
-    window.open(url, "_blank");
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -150,13 +137,6 @@ export function LinkedInCard({ post }: LinkedInCardProps) {
               <><ExternalLink className="h-3.5 w-3.5" /><span>LinkedIn</span></>
             )}
           </button>
-          <button
-            onClick={handleWhatsApp}
-            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            <span>WhatsApp</span>
-          </button>
         </div>
       </div>
 
@@ -179,11 +159,6 @@ export function TikTokCard({ scenes }: TikTokCardProps) {
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
     window.open("https://www.tiktok.com/creator-center/upload", "_blank");
-  }
-
-  function handleWhatsApp() {
-    const url = `https://wa.me/?text=${encodeURIComponent(fullScript)}`;
-    window.open(url, "_blank");
   }
 
   return (
@@ -215,13 +190,6 @@ export function TikTokCard({ scenes }: TikTokCardProps) {
               <><ExternalLink className="h-3.5 w-3.5" /><span>Otwórz TikTok</span></>
             )}
           </button>
-          <button
-            onClick={handleWhatsApp}
-            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            <span>WhatsApp</span>
-          </button>
         </div>
       </div>
 
@@ -246,6 +214,48 @@ export function TikTokCard({ scenes }: TikTokCardProps) {
             </div>
           </div>
         ))}
+      </div>
+    </motion.div>
+  );
+}
+
+export function WhatsAppCard({ message }: WhatsAppCardProps) {
+  function handleShare() {
+    const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="rounded-2xl border border-white/10 bg-zinc-900 overflow-hidden"
+    >
+      <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#25D366]">
+            <MessageCircle className="h-4 w-4 text-white" />
+          </div>
+          <div>
+            <p className="font-semibold text-white text-sm">Wiadomość WhatsApp</p>
+            <p className="text-xs text-zinc-500">{message.length} znaków</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <CopyButton text={message} />
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Wyślij na WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="px-5 py-4">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-200">{message}</p>
       </div>
     </motion.div>
   );

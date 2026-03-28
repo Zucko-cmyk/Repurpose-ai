@@ -11,7 +11,7 @@ export async function repurposeContent(sourceText: string): Promise<RepurposeRes
 SOURCE CONTENT:
 ${sourceText}
 
-Generate the following 3 formats. Return ONLY valid JSON, no markdown, no extra text.
+Generate the following 4 formats. Return ONLY valid JSON, no markdown, no extra text.
 
 {
   "twitterThread": [
@@ -68,7 +68,8 @@ Generate the following 3 formats. Return ONLY valid JSON, no markdown, no extra 
       "voiceover": "Payoff + CTA — tell them what to do next",
       "visual": "Description of what appears on screen"
     }
-  ]
+  ],
+  "whatsappMessage": "WhatsApp channel/group message (150-300 words). Casual but informative tone. Use emojis sparingly to highlight key points. Short paragraphs. End with a clear call to action or question. Formatted for easy reading on mobile."
 }
 
 Rules:
@@ -76,6 +77,7 @@ Rules:
 - Twitter: each tweet must stand alone but connect to the thread
 - LinkedIn: professional tone, no emojis overload, value-dense
 - TikTok: conversational, energetic, direct address ("you")
+- WhatsApp: casual, friendly, mobile-first, easy to read in a chat
 - If source is in Polish, output in Polish. Otherwise match source language.`;
 
   const model = getClient().getGenerativeModel({ model: "gemini-2.5-flash" });
