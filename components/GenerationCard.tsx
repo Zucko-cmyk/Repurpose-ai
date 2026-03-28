@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AtSign, Building2, Video, Clock, ChevronDown, ChevronUp, MessageCircle, Facebook } from "lucide-react";
+import { AtSign, Building2, Video, Clock, ChevronDown, ChevronUp, MessageCircle, Share2 } from "lucide-react";
 import { TwitterCard, LinkedInCard, TikTokCard, WhatsAppCard, FacebookCard } from "./OutputCard";
 import type { Generation } from "@/types";
 
@@ -59,7 +59,7 @@ export default function GenerationCard({ gen }: { gen: Generation }) {
           )}
           {gen.facebook_post && (
             <span className="flex items-center gap-1 rounded-full bg-blue-600/10 px-2.5 py-1 text-xs text-blue-400">
-              <Facebook className="h-3 w-3" />
+              <Share2 className="h-3 w-3" />
               Facebook
             </span>
           )}

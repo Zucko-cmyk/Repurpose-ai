@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, AtSign, Building2, Video, ExternalLink, MessageCircle, ChevronDown, ChevronUp, Facebook } from "lucide-react";
+import { Copy, Check, AtSign, Building2, Video, ExternalLink, MessageCircle, ChevronDown, ChevronUp, Share2 } from "lucide-react";
 import type { TwitterTweet, TikTokScene } from "@/types";
 
 interface TwitterCardProps {
@@ -379,7 +379,7 @@ export function FacebookCard({ post }: FacebookCardProps) {
       >
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1877F2]">
-            <Facebook className="h-4 w-4 text-white" />
+            <Share2 className="h-4 w-4 text-white" />
           </div>
           <div className="text-left">
             <p className="font-semibold text-white text-sm">Post na Facebooku</p>
