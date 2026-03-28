@@ -19,8 +19,12 @@ export default function Generator() {
   const supabase = createClient();
 
   async function handleGenerate() {
-    if (text.trim().length < 20) {
-      setError("Wprowadź co najmniej 20 znaków tekstu.");
+    if (text.trim().length < 50) {
+      setError("Wprowadź co najmniej 50 znaków tekstu.");
+      return;
+    }
+    if (text.length > 5000) {
+      setError("Tekst może mieć maksymalnie 5000 znaków.");
       return;
     }
 
@@ -80,13 +84,16 @@ export default function Generator() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Wklej tutaj swój artykuł, notkę, przemyślenie lub link do treści (min. 50 znaków)…"
           rows={8}
+          maxLength={5000}
           className="w-full resize-none rounded-xl bg-transparent px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 outline-none"
         />
         <div className="flex items-center justify-between px-4 pb-3">
-          <span className="text-xs text-zinc-400">{text.length} znaków</span>
+          <span className={`text-xs ${text.length > 4800 ? "text-amber-400" : "text-zinc-400"}`}>
+            {text.length}/5000 znaków
+          </span>
           <button
             onClick={handleGenerate}
-            disabled={loading || text.trim().length < 20}
+            disabled={loading || text.trim().length < 50 || text.length > 5000}
             className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (

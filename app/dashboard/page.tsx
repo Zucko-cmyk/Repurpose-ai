@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-server";
 import { AtSign, Building2, Video, Clock } from "lucide-react";
 import type { Generation } from "@/types";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
 
   const {
     data: { user },

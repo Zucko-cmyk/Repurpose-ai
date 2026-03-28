@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { repurposeContent } from "@/lib/anthropic";
 import { createAdminClient } from "@/lib/supabase-server";
-import { deductCredit, ensureUserCreditsRow } from "@/lib/credits";
+import { deductCredit, ensureUserCreditsRow, getUserCredits } from "@/lib/credits";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,17 +33,20 @@ export async function POST(req: NextRequest) {
     // Ensure credits row exists (new user gets 3 free)
     await ensureUserCreditsRow(supabase, user.id);
 
-    // Deduct 1 credit
-    const success = await deductCredit(supabase, user.id);
-    if (!success) {
+    // Check credits before calling AI
+    const credits = await getUserCredits(supabase, user.id);
+    if (credits <= 0) {
       return NextResponse.json(
         { error: "Brak kredytów. Kup pakiet, aby kontynuować." },
         { status: 402 }
       );
     }
 
-    // Generate content
+    // Generate content first — deduct only on success
     const result = await repurposeContent(text.trim());
+
+    // Deduct 1 credit after successful generation
+    await deductCredit(supabase, user.id);
 
     // Save generation to DB
     await supabase.from("generations").insert({
