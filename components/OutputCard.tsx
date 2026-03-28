@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, AtSign, Building2, Video } from "lucide-react";
+import { Copy, Check, AtSign, Building2, Video, ExternalLink } from "lucide-react";
 import type { TwitterTweet, TikTokScene } from "@/types";
 
 interface TwitterCardProps {
@@ -79,6 +79,30 @@ export function TwitterCard({ tweets }: TwitterCardProps) {
   );
 }
 
+function LinkedInPublishButton({ post }: { post: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handlePublish() {
+    await navigator.clipboard.writeText(post);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+    window.open("https://www.linkedin.com/feed/", "_blank");
+  }
+
+  return (
+    <button
+      onClick={handlePublish}
+      className="flex items-center gap-1.5 rounded-lg bg-[#0077b5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#006097] transition-colors"
+    >
+      {copied ? (
+        <><Check className="h-3.5 w-3.5" /><span>Skopiowano — wklej!</span></>
+      ) : (
+        <><ExternalLink className="h-3.5 w-3.5" /><span>Opublikuj na LinkedIn</span></>
+      )}
+    </button>
+  );
+}
+
 export function LinkedInCard({ post }: LinkedInCardProps) {
   return (
     <motion.div
@@ -97,7 +121,10 @@ export function LinkedInCard({ post }: LinkedInCardProps) {
             <p className="text-xs text-zinc-500">{post.length} znaków</p>
           </div>
         </div>
-        <CopyButton text={post} />
+        <div className="flex items-center gap-2">
+          <CopyButton text={post} />
+          <LinkedInPublishButton post={post} />
+        </div>
       </div>
 
       <div className="px-5 py-4">
