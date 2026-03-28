@@ -25,7 +25,7 @@ ${sourceText}
 
 IMPORTANT: Generate ALL output exclusively in ${languageName}. Regardless of the language of the source content, every word of the output must be in ${languageName}.
 
-Generate the following 4 formats. Return ONLY valid JSON, no markdown, no extra text.
+Generate the following 5 formats. Return ONLY valid JSON, no markdown, no extra text.
 
 {
   "twitterThread": [
@@ -83,7 +83,8 @@ Generate the following 4 formats. Return ONLY valid JSON, no markdown, no extra 
       "visual": "Description of what appears on screen"
     }
   ],
-  "whatsappMessage": "WhatsApp channel/group message (150-300 words). Casual but informative tone. Use emojis sparingly to highlight key points. Short paragraphs. End with a clear call to action or question. Formatted for easy reading on mobile."
+  "whatsappMessage": "WhatsApp channel/group message (150-300 words). Casual but informative tone. Use emojis sparingly to highlight key points. Short paragraphs. End with a clear call to action or question. Formatted for easy reading on mobile.",
+  "facebookPost": "Facebook post (150-400 words). Friendly and engaging tone. Mix of storytelling and value. Use 1-3 emojis naturally. End with a question or call to action to drive comments and shares."
 }
 
 Rules:
@@ -92,6 +93,7 @@ Rules:
 - LinkedIn: professional tone, no emojis overload, value-dense
 - TikTok: conversational, energetic, direct address ("you")
 - WhatsApp: casual, friendly, mobile-first, easy to read in a chat
+- Facebook: engaging, mix of story and value, drives interaction
 - Output language: ${languageName} (always, regardless of source language)`;
 
   const model = getClient().getGenerativeModel({ model: "gemini-2.5-flash" });

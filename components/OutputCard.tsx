@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, AtSign, Building2, Video, ExternalLink, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, Check, AtSign, Building2, Video, ExternalLink, MessageCircle, ChevronDown, ChevronUp, Facebook } from "lucide-react";
 import type { TwitterTweet, TikTokScene } from "@/types";
 
 interface TwitterCardProps {
@@ -19,6 +19,10 @@ interface TikTokCardProps {
 
 interface WhatsAppCardProps {
   message: string;
+}
+
+interface FacebookCardProps {
+  post: string;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -342,6 +346,77 @@ export function WhatsAppCard({ message }: WhatsAppCardProps) {
           >
             <div className="border-t border-white/10 px-5 py-4">
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-200">{message}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+export function FacebookCard({ post }: FacebookCardProps) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function handlePublish(e: React.MouseEvent) {
+    e.stopPropagation();
+    await navigator.clipboard.writeText(post);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+    window.open("https://www.facebook.com/", "_blank");
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+      className="rounded-2xl border border-white/10 bg-zinc-900 overflow-hidden"
+    >
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1877F2]">
+            <Facebook className="h-4 w-4 text-white" />
+          </div>
+          <div className="text-left">
+            <p className="font-semibold text-white text-sm">Post na Facebooku</p>
+            <p className="text-xs text-zinc-500">{post.length} znaków</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {open && (
+            <>
+              <CopyButton text={post} />
+              <button
+                onClick={handlePublish}
+                className="flex items-center gap-1.5 rounded-lg bg-[#1877F2] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1464d8] transition-colors"
+              >
+                {copied ? (
+                  <><Check className="h-3.5 w-3.5" /><span>Skopiowano — wklej!</span></>
+                ) : (
+                  <><ExternalLink className="h-3.5 w-3.5" /><span>Facebook</span></>
+                )}
+              </button>
+            </>
+          )}
+          {open ? <ChevronUp className="h-4 w-4 text-zinc-500" /> : <ChevronDown className="h-4 w-4 text-zinc-500" />}
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-white/10 px-5 py-4">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-200">{post}</p>
             </div>
           </motion.div>
         )}

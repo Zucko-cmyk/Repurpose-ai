@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, AlertCircle, LogIn, Globe } from "lucide-react";
-import { TwitterCard, LinkedInCard, TikTokCard, WhatsAppCard } from "./OutputCard";
+import { TwitterCard, LinkedInCard, TikTokCard, WhatsAppCard, FacebookCard } from "./OutputCard";
 import PricingButton from "./PricingButton";
 import { createClient } from "@/lib/supabase";
 import type { RepurposeResult } from "@/types";
@@ -205,6 +205,7 @@ export default function Generator() {
           <LinkedInCard post={result.linkedinPost} />
           <TikTokCard scenes={result.tiktokScript} />
           <WhatsAppCard message={result.whatsappMessage} />
+          <FacebookCard post={result.facebookPost} />
         </div>
       )}
     </div>

@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
       linkedin_post: result.linkedinPost,
       tiktok_script: result.tiktokScript,
       whatsapp_message: result.whatsappMessage,
+      facebook_post: result.facebookPost,
     });
 
     return NextResponse.json({ result });

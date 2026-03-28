@@ -15,6 +15,7 @@ export interface RepurposeResult {
   linkedinPost: string;
   tiktokScript: TikTokScene[];
   whatsappMessage: string;
+  facebookPost: string;
 }
 
 export interface Generation {
@@ -25,6 +26,7 @@ export interface Generation {
   linkedin_post: string | null;
   tiktok_script: TikTokScene[] | null;
   whatsapp_message: string | null;
+  facebook_post: string | null;
   created_at: string;
 }
 
