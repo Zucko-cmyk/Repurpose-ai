@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase-server";
 import GenerationCard from "@/components/GenerationCard";
+import Link from "next/link";
+import { Home } from "lucide-react";
 import type { Generation } from "@/types";
 
 export default async function DashboardPage() {
@@ -33,6 +35,13 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Historia generowań</h1>
           <p className="text-sm text-zinc-500">{user.email}</p>
+          <Link
+            href="/"
+            className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 transition-colors"
+          >
+            <Home className="h-4 w-4" />
+            Strona główna
+          </Link>
         </div>
         <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-center">
           <p className="text-2xl font-bold text-violet-300">
