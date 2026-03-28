@@ -1,6 +1,6 @@
 import Generator from "@/components/Generator";
 import PricingButton from "@/components/PricingButton";
-import { Sparkles, AtSign, Building2, Video, Zap } from "lucide-react";
+import { Sparkles, AtSign, Building2, Video, Zap, MessageCircle, Share2 } from "lucide-react";
 
 export default function Home() {
   return (
@@ -20,13 +20,13 @@ export default function Home() {
           <h1 className="mb-4 text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl">
             Jeden tekst,{" "}
             <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-              trzy platformy
+              pięć platform
             </span>
           </h1>
 
           <p className="mx-auto mb-8 max-w-xl text-lg text-zinc-400">
-            Wklej artykuł lub przemyślenie. AI generuje wątek na X, post LinkedIn
-            i skrypt TikTok – zachowując Twój styl i kluczowe insights.
+            Wklej artykuł lub przemyślenie. AI generuje treści na X, LinkedIn,
+            TikTok, WhatsApp i Facebook – zachowując Twój styl i kluczowe insights.
           </p>
 
           <div className="mb-12 flex flex-wrap justify-center gap-3">
@@ -34,6 +34,8 @@ export default function Home() {
               { icon: AtSign, label: "Wątek X (Twitter)", color: "text-sky-400" },
               { icon: Building2, label: "Post LinkedIn", color: "text-blue-400" },
               { icon: Video, label: "Skrypt TikTok/Reels", color: "text-pink-400" },
+              { icon: MessageCircle, label: "Wiadomość WhatsApp", color: "text-green-400" },
+              { icon: Share2, label: "Post Facebook", color: "text-blue-500" },
             ].map(({ icon: Icon, label, color }) => (
               <div
                 key={label}
@@ -69,7 +71,7 @@ export default function Home() {
               <p className="text-3xl font-bold text-white">0 zł</p>
               <ul className="mt-4 space-y-2 text-sm text-zinc-400">
                 <li>✓ 3 darmowe generowania</li>
-                <li>✓ Wszystkie 3 formaty naraz</li>
+                <li>✓ Wszystkie 5 formatów naraz</li>
                 <li>✓ Historia w dashboardzie</li>
               </ul>
             </div>
