@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, AtSign, Building2, Video, ExternalLink } from "lucide-react";
+import { Copy, Check, AtSign, Building2, Video, ExternalLink, MessageCircle } from "lucide-react";
 import type { TwitterTweet, TikTokScene } from "@/types";
 
 interface TwitterCardProps {
@@ -42,6 +42,17 @@ function CopyButton({ text }: { text: string }) {
 
 export function TwitterCard({ tweets }: TwitterCardProps) {
   const fullThread = tweets.map((t) => t.content).join("\n\n---\n\n");
+  const firstTweet = tweets[0]?.content ?? "";
+
+  function handlePublishX() {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(firstTweet)}`;
+    window.open(url, "_blank");
+  }
+
+  function handleWhatsApp() {
+    const url = `https://wa.me/?text=${encodeURIComponent(fullThread)}`;
+    window.open(url, "_blank");
+  }
 
   return (
     <motion.div
@@ -59,7 +70,23 @@ export function TwitterCard({ tweets }: TwitterCardProps) {
             <p className="text-xs text-zinc-500">{tweets.length} tweetów</p>
           </div>
         </div>
-        <CopyButton text={fullThread} />
+        <div className="flex items-center gap-2">
+          <CopyButton text={fullThread} />
+          <button
+            onClick={handlePublishX}
+            className="flex items-center gap-1.5 rounded-lg bg-black border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Opublikuj na X</span>
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>WhatsApp</span>
+          </button>
+        </div>
       </div>
 
       <div className="divide-y divide-white/5">
@@ -79,31 +106,21 @@ export function TwitterCard({ tweets }: TwitterCardProps) {
   );
 }
 
-function LinkedInPublishButton({ post }: { post: string }) {
+export function LinkedInCard({ post }: LinkedInCardProps) {
   const [copied, setCopied] = useState(false);
 
-  async function handlePublish() {
+  async function handlePublishLinkedIn() {
     await navigator.clipboard.writeText(post);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
     window.open("https://www.linkedin.com/feed/", "_blank");
   }
 
-  return (
-    <button
-      onClick={handlePublish}
-      className="flex items-center gap-1.5 rounded-lg bg-[#0077b5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#006097] transition-colors"
-    >
-      {copied ? (
-        <><Check className="h-3.5 w-3.5" /><span>Skopiowano — wklej!</span></>
-      ) : (
-        <><ExternalLink className="h-3.5 w-3.5" /><span>Opublikuj na LinkedIn</span></>
-      )}
-    </button>
-  );
-}
+  function handleWhatsApp() {
+    const url = `https://wa.me/?text=${encodeURIComponent(post)}`;
+    window.open(url, "_blank");
+  }
 
-export function LinkedInCard({ post }: LinkedInCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -123,7 +140,23 @@ export function LinkedInCard({ post }: LinkedInCardProps) {
         </div>
         <div className="flex items-center gap-2">
           <CopyButton text={post} />
-          <LinkedInPublishButton post={post} />
+          <button
+            onClick={handlePublishLinkedIn}
+            className="flex items-center gap-1.5 rounded-lg bg-[#0077b5] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#006097] transition-colors"
+          >
+            {copied ? (
+              <><Check className="h-3.5 w-3.5" /><span>Skopiowano — wklej!</span></>
+            ) : (
+              <><ExternalLink className="h-3.5 w-3.5" /><span>LinkedIn</span></>
+            )}
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>WhatsApp</span>
+          </button>
         </div>
       </div>
 
@@ -138,6 +171,20 @@ export function TikTokCard({ scenes }: TikTokCardProps) {
   const fullScript = scenes
     .map((s) => `[Scena ${s.scene} – ${s.duration}]\nLektor: ${s.voiceover}\nWizualia: ${s.visual}`)
     .join("\n\n");
+
+  const [copied, setCopied] = useState(false);
+
+  async function handlePublishTikTok() {
+    await navigator.clipboard.writeText(fullScript);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+    window.open("https://www.tiktok.com/creator-center/upload", "_blank");
+  }
+
+  function handleWhatsApp() {
+    const url = `https://wa.me/?text=${encodeURIComponent(fullScript)}`;
+    window.open(url, "_blank");
+  }
 
   return (
     <motion.div
@@ -156,7 +203,26 @@ export function TikTokCard({ scenes }: TikTokCardProps) {
             <p className="text-xs text-zinc-500">{scenes.length} scen</p>
           </div>
         </div>
-        <CopyButton text={fullScript} />
+        <div className="flex items-center gap-2">
+          <CopyButton text={fullScript} />
+          <button
+            onClick={handlePublishTikTok}
+            className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-400 px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+          >
+            {copied ? (
+              <><Check className="h-3.5 w-3.5" /><span>Skopiowano!</span></>
+            ) : (
+              <><ExternalLink className="h-3.5 w-3.5" /><span>Otwórz TikTok</span></>
+            )}
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5d] transition-colors"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>WhatsApp</span>
+          </button>
+        </div>
       </div>
 
       <div className="divide-y divide-white/5">
