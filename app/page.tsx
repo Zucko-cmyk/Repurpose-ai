@@ -1,5 +1,6 @@
 import Generator from "@/components/Generator";
 import PricingButton from "@/components/PricingButton";
+import RecentGenerations from "@/components/RecentGenerations";
 import { Sparkles, AtSign, Building2, Video, Zap, MessageCircle, Share2 } from "lucide-react";
 
 export default function Home() {
@@ -53,6 +54,9 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-4 pb-16">
         <Generator />
       </section>
+
+      {/* Recent Generations */}
+      <RecentGenerations />
 
       {/* Pricing */}
       <section className="border-t border-white/10 bg-zinc-900/50 px-4 py-16">

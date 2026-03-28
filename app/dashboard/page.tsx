@@ -43,11 +43,19 @@ export default async function DashboardPage() {
             Strona główna
           </Link>
         </div>
-        <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-center">
-          <p className="text-2xl font-bold text-violet-300">
-            {creditsRow?.credits ?? 0}
-          </p>
-          <p className="text-xs text-zinc-500">kredytów</p>
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl border border-zinc-700 bg-zinc-800/60 px-4 py-2 text-center">
+            <p className="text-2xl font-bold text-zinc-200">
+              {generations?.length ?? 0}
+            </p>
+            <p className="text-xs text-zinc-500">generowań łącznie</p>
+          </div>
+          <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-center">
+            <p className="text-2xl font-bold text-violet-300">
+              {creditsRow?.credits ?? 0}
+            </p>
+            <p className="text-xs text-zinc-500">kredytów</p>
+          </div>
         </div>
       </div>
 

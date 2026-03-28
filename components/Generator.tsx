@@ -2,14 +2,82 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, AlertCircle, LogIn, Globe } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, LogIn, Globe, Link as LinkIcon, FileText, Printer } from "lucide-react";
 import { TwitterCard, LinkedInCard, TikTokCard, WhatsAppCard, FacebookCard } from "./OutputCard";
 import PricingButton from "./PricingButton";
 import { createClient } from "@/lib/supabase";
 import type { RepurposeResult } from "@/types";
 
+function buildPrintHTML(result: RepurposeResult): string {
+  const tweetRows = result.twitterThread
+    .map(
+      (t) => `<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:10px;">
+        <span style="font-weight:600;color:#6d28d9;">${t.order}.</span>
+        <p style="margin:6px 0 0 0;">${t.content.replace(/\n/g, "<br>")}</p>
+        <small style="color:#9ca3af;">${t.content.length}/280</small>
+      </div>`
+    )
+    .join("");
+
+  const sceneRows = result.tiktokScript
+    .map(
+      (s) => `<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:10px;">
+        <strong>Scena ${s.scene}</strong> <span style="color:#9ca3af;">${s.duration}</span>
+        <p style="margin:6px 0 0 0;"><strong>Lektor:</strong> ${s.voiceover.replace(/\n/g, "<br>")}</p>
+        <p style="margin:4px 0 0 0;color:#6b7280;"><em>Wizualia: ${s.visual.replace(/\n/g, "<br>")}</em></p>
+      </div>`
+    )
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>RepurposeAI – Eksport wyników</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 32px 24px; color: #111; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; }
+    h2 { font-size: 1.1rem; font-weight: 600; margin: 28px 0 12px 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 6px; }
+    p { line-height: 1.6; }
+    .section { margin-bottom: 32px; }
+    @media print { body { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <h1>RepurposeAI – Wyniki generowania</h1>
+
+  <div class="section">
+    <h2>Wątek na X (Twitter)</h2>
+    ${tweetRows}
+  </div>
+
+  <div class="section">
+    <h2>Post na LinkedIn</h2>
+    <p>${result.linkedinPost.replace(/\n/g, "<br>")}</p>
+  </div>
+
+  <div class="section">
+    <h2>Skrypt TikTok / Reels</h2>
+    ${sceneRows}
+  </div>
+
+  <div class="section">
+    <h2>Wiadomość WhatsApp</h2>
+    <p>${result.whatsappMessage.replace(/\n/g, "<br>")}</p>
+  </div>
+
+  <div class="section">
+    <h2>Post na Facebooku</h2>
+    <p>${result.facebookPost.replace(/\n/g, "<br>")}</p>
+  </div>
+</body>
+</html>`;
+}
+
 export default function Generator() {
+  const [inputMode, setInputMode] = useState<"text" | "url">("text");
   const [text, setText] = useState("");
+  const [url, setUrl] = useState("");
   const [language, setLanguage] = useState("pl");
   const [tone, setTone] = useState("standard");
   const [result, setResult] = useState<RepurposeResult | null>(null);
@@ -41,14 +109,34 @@ export default function Generator() {
 
   const supabase = createClient();
 
-  async function handleGenerate() {
-    if (text.trim().length < 50) {
-      setError("Wprowadź co najmniej 50 znaków tekstu.");
-      return;
+  function isValidUrl(value: string): boolean {
+    try {
+      const u = new URL(value);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch {
+      return false;
     }
-    if (text.length > 5000) {
-      setError("Tekst może mieć maksymalnie 5000 znaków.");
-      return;
+  }
+
+  const canGenerate = inputMode === "text"
+    ? text.trim().length >= 50 && text.length <= 5000
+    : url.trim().length > 0 && isValidUrl(url.trim());
+
+  async function handleGenerate() {
+    if (inputMode === "text") {
+      if (text.trim().length < 50) {
+        setError("Wprowadź co najmniej 50 znaków tekstu.");
+        return;
+      }
+      if (text.length > 5000) {
+        setError("Tekst może mieć maksymalnie 5000 znaków.");
+        return;
+      }
+    } else {
+      if (!isValidUrl(url.trim())) {
+        setError("Wprowadź poprawny adres URL (np. https://example.com/artykul).");
+        return;
+      }
     }
 
     setLoading(true);
@@ -58,10 +146,14 @@ export default function Generator() {
     setResult(null);
 
     try {
+      const body = inputMode === "text"
+        ? { text, language, tone }
+        : { url: url.trim(), language, tone };
+
       const res = await fetch("/api/repurpose", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, language, tone }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -98,8 +190,45 @@ export default function Generator() {
     });
   }
 
+  function handleExportPDF() {
+    if (!result) return;
+    const html = buildPrintHTML(result);
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  }
+
   return (
     <div className="space-y-6">
+      {/* Input mode toggle */}
+      <div className="flex rounded-xl border border-white/10 bg-zinc-900 p-1 w-fit">
+        <button
+          onClick={() => setInputMode("text")}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            inputMode === "text"
+              ? "bg-violet-600 text-white"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <FileText className="h-3.5 w-3.5" />
+          Tekst
+        </button>
+        <button
+          onClick={() => setInputMode("url")}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            inputMode === "url"
+              ? "bg-violet-600 text-white"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <LinkIcon className="h-3.5 w-3.5" />
+          URL
+        </button>
+      </div>
+
       {/* Tone selector */}
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-widest text-zinc-500">Styl treści</p>
@@ -122,19 +251,39 @@ export default function Generator() {
 
       {/* Input area */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900 p-1">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Wklej tutaj swój artykuł, notkę, przemyślenie lub link do treści (min. 50 znaków)…"
-          rows={8}
-          maxLength={5000}
-          className="w-full resize-none rounded-xl bg-transparent px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 outline-none"
-        />
+        {inputMode === "text" ? (
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Wklej tutaj swój artykuł, notkę lub przemyślenie (min. 50 znaków)…"
+            rows={8}
+            maxLength={5000}
+            className="w-full resize-none rounded-xl bg-transparent px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 outline-none"
+          />
+        ) : (
+          <div className="px-4 py-3">
+            <div className="flex items-center gap-2 mb-1">
+              <LinkIcon className="h-4 w-4 text-zinc-500 flex-shrink-0" />
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/artykul"
+                className="w-full bg-transparent text-sm text-zinc-200 placeholder-zinc-600 outline-none"
+              />
+            </div>
+            <p className="text-xs text-zinc-600 mt-2">
+              Podaj URL artykułu lub strony. Zawartość zostanie pobrana i przetworzona przez AI.
+            </p>
+          </div>
+        )}
         <div className="flex items-center justify-between px-4 pb-3">
           <div className="flex items-center gap-3">
-            <span className={`text-xs ${text.length > 4800 ? "text-amber-400" : "text-zinc-400"}`}>
-              {text.length}/5000 znaków
-            </span>
+            {inputMode === "text" && (
+              <span className={`text-xs ${text.length > 4800 ? "text-amber-400" : "text-zinc-400"}`}>
+                {text.length}/5000 znaków
+              </span>
+            )}
             <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-2 py-1">
               <Globe className="h-3.5 w-3.5 text-zinc-400" />
               <select
@@ -152,7 +301,7 @@ export default function Generator() {
           </div>
           <button
             onClick={handleGenerate}
-            disabled={loading || text.trim().length < 50 || text.length > 5000}
+            disabled={loading || !canGenerate}
             className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
@@ -231,6 +380,13 @@ export default function Generator() {
               Wyniki
             </span>
             <div className="h-px flex-1 bg-white/10" />
+            <button
+              onClick={handleExportPDF}
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              <Printer className="h-3.5 w-3.5" />
+              Eksportuj PDF
+            </button>
           </div>
 
           <TwitterCard tweets={result.twitterThread} />
