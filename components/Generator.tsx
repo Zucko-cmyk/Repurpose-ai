@@ -284,6 +284,11 @@ export default function Generator() {
                 {text.length}/5000 znaków
               </span>
             )}
+            {inputMode === "text" && text.trim().length >= 50 && (
+              <span className={`text-xs font-medium ${text.length > 500 ? "text-amber-400" : "text-emerald-400"}`}>
+                {text.length > 500 ? "2 kredyty" : "1 kredyt"}
+              </span>
+            )}
             <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-2 py-1">
               <Globe className="h-3.5 w-3.5 text-zinc-400" />
               <select

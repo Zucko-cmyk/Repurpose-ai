@@ -94,11 +94,14 @@ export async function POST(req: NextRequest) {
     // Ensure credits row exists (new user gets 3 free)
     await ensureUserCreditsRow(supabase, user.id);
 
+    // Determine credit cost: 2 credits for text > 500 chars
+    const creditCost = sourceText.length > 500 ? 2 : 1;
+
     // Check credits before calling AI
     const credits = await getUserCredits(supabase, user.id);
-    if (credits <= 0) {
+    if (credits < creditCost) {
       return NextResponse.json(
-        { error: "Brak kredytów. Kup pakiet, aby kontynuować." },
+        { error: `Brak kredytów. To generowanie kosztuje ${creditCost} kredyty (tekst > 500 znaków). Kup pakiet, aby kontynuować.` },
         { status: 402 }
       );
     }
@@ -106,8 +109,8 @@ export async function POST(req: NextRequest) {
     // Generate content first — deduct only on success
     const result = await repurposeContent(sourceText, language ?? "pl", tone ?? "standard");
 
-    // Deduct 1 credit after successful generation
-    await deductCredit(supabase, user.id);
+    // Deduct credits after successful generation
+    await deductCredit(supabase, user.id, creditCost);
 
     // Save generation to DB
     await supabase.from("generations").insert({
@@ -120,7 +123,7 @@ export async function POST(req: NextRequest) {
       facebook_post: result.facebookPost,
     });
 
-    return NextResponse.json({ result });
+    return NextResponse.json({ result, creditCost });
   } catch (err) {
     console.error("Repurpose error:", err);
     return NextResponse.json(

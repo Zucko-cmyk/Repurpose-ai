@@ -34,15 +34,16 @@ export async function ensureUserCreditsRow(
 
 export async function deductCredit(
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
+  amount: number = 1
 ): Promise<boolean> {
   const credits = await getUserCredits(supabase, userId);
-  if (credits <= 0) return false;
+  if (credits < amount) return false;
 
   const { error } = await supabase
     .from("user_credits")
     .update({
-      credits: credits - 1,
+      credits: credits - amount,
       updated_at: new Date().toISOString(),
     })
     .eq("user_id", userId);
