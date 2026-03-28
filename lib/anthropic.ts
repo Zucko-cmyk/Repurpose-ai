@@ -5,11 +5,25 @@ function getClient() {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 }
 
-export async function repurposeContent(sourceText: string): Promise<RepurposeResult> {
+const LANGUAGE_NAMES: Record<string, string> = {
+  pl: "Polish",
+  en: "English",
+  de: "German",
+  fr: "French",
+  es: "Spanish",
+  it: "Italian",
+  uk: "Ukrainian",
+};
+
+export async function repurposeContent(sourceText: string, language: string = "pl"): Promise<RepurposeResult> {
+  const languageName = LANGUAGE_NAMES[language] ?? "Polish";
+
   const prompt = `You are an expert content repurposing specialist. Your job is to transform source content into multiple social media formats while PRESERVING the original tone, key insights, and unique value of the source material.
 
 SOURCE CONTENT:
 ${sourceText}
+
+IMPORTANT: Generate ALL output exclusively in ${languageName}. Regardless of the language of the source content, every word of the output must be in ${languageName}.
 
 Generate the following 4 formats. Return ONLY valid JSON, no markdown, no extra text.
 
@@ -78,7 +92,7 @@ Rules:
 - LinkedIn: professional tone, no emojis overload, value-dense
 - TikTok: conversational, energetic, direct address ("you")
 - WhatsApp: casual, friendly, mobile-first, easy to read in a chat
-- If source is in Polish, output in Polish. Otherwise match source language.`;
+- Output language: ${languageName} (always, regardless of source language)`;
 
   const model = getClient().getGenerativeModel({ model: "gemini-2.5-flash" });
   const response = await model.generateContent(prompt);

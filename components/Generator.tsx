@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, AlertCircle, LogIn } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, LogIn, Globe } from "lucide-react";
 import { TwitterCard, LinkedInCard, TikTokCard, WhatsAppCard } from "./OutputCard";
 import PricingButton from "./PricingButton";
 import { createClient } from "@/lib/supabase";
@@ -10,11 +10,22 @@ import type { RepurposeResult } from "@/types";
 
 export default function Generator() {
   const [text, setText] = useState("");
+  const [language, setLanguage] = useState("pl");
   const [result, setResult] = useState<RepurposeResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [needsCredits, setNeedsCredits] = useState(false);
   const [needsLogin, setNeedsLogin] = useState(false);
+
+  const languages = [
+    { code: "pl", label: "🇵🇱 Polski" },
+    { code: "en", label: "🇬🇧 English" },
+    { code: "de", label: "🇩🇪 Deutsch" },
+    { code: "fr", label: "🇫🇷 Français" },
+    { code: "es", label: "🇪🇸 Español" },
+    { code: "it", label: "🇮🇹 Italiano" },
+    { code: "uk", label: "🇺🇦 Українська" },
+  ];
 
   const supabase = createClient();
 
@@ -38,7 +49,7 @@ export default function Generator() {
       const res = await fetch("/api/repurpose", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, language }),
       });
 
       const data = await res.json();
@@ -88,9 +99,25 @@ export default function Generator() {
           className="w-full resize-none rounded-xl bg-transparent px-4 py-3 text-sm text-zinc-200 placeholder-zinc-600 outline-none"
         />
         <div className="flex items-center justify-between px-4 pb-3">
-          <span className={`text-xs ${text.length > 4800 ? "text-amber-400" : "text-zinc-400"}`}>
-            {text.length}/5000 znaków
-          </span>
+          <div className="flex items-center gap-3">
+            <span className={`text-xs ${text.length > 4800 ? "text-amber-400" : "text-zinc-400"}`}>
+              {text.length}/5000 znaków
+            </span>
+            <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-2 py-1">
+              <Globe className="h-3.5 w-3.5 text-zinc-400" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="bg-transparent text-xs text-zinc-300 outline-none cursor-pointer"
+              >
+                {languages.map((l) => (
+                  <option key={l.code} value={l.code} className="bg-zinc-800">
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <button
             onClick={handleGenerate}
             disabled={loading || text.trim().length < 50 || text.length > 5000}
