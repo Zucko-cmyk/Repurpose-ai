@@ -11,6 +11,7 @@ import type { RepurposeResult } from "@/types";
 export default function Generator() {
   const [text, setText] = useState("");
   const [language, setLanguage] = useState("pl");
+  const [tone, setTone] = useState("standard");
   const [result, setResult] = useState<RepurposeResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +26,17 @@ export default function Generator() {
     { code: "es", label: "🇪🇸 Español" },
     { code: "it", label: "🇮🇹 Italiano" },
     { code: "uk", label: "🇺🇦 Українська" },
+  ];
+
+  const tones = [
+    { code: "standard",      label: "✍️ Standardowy" },
+    { code: "kontrowersja",  label: "🔥 Kontrowersja" },
+    { code: "ranking",       label: "🏆 Ranking / Top lista" },
+    { code: "drama",         label: "🎭 Drama / Historia" },
+    { code: "dyskusja",      label: "💬 Dyskusja / Debata" },
+    { code: "inspiracja",    label: "💡 Inspiracja" },
+    { code: "edukacja",      label: "📚 Edukacja / Poradnik" },
+    { code: "humor",         label: "😄 Humor / Satyra" },
   ];
 
   const supabase = createClient();
@@ -49,7 +61,7 @@ export default function Generator() {
       const res = await fetch("/api/repurpose", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, language }),
+        body: JSON.stringify({ text, language, tone }),
       });
 
       const data = await res.json();
@@ -88,6 +100,26 @@ export default function Generator() {
 
   return (
     <div className="space-y-6">
+      {/* Tone selector */}
+      <div>
+        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-zinc-500">Styl treści</p>
+        <div className="flex flex-wrap gap-2">
+          {tones.map((t) => (
+            <button
+              key={t.code}
+              onClick={() => setTone(t.code)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                tone === t.code
+                  ? "border-violet-500 bg-violet-500/20 text-violet-300"
+                  : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Input area */}
       <div className="rounded-2xl border border-white/10 bg-zinc-900 p-1">
         <textarea

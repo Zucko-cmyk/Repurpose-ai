@@ -7,7 +7,7 @@ import { deductCredit, ensureUserCreditsRow, getUserCredits } from "@/lib/credit
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, language } = await req.json();
+    const { text, language, tone } = await req.json();
 
     if (!text || typeof text !== "string" || text.trim().length < 50) {
       return NextResponse.json(
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate content first — deduct only on success
-    const result = await repurposeContent(text.trim(), language ?? "pl");
+    const result = await repurposeContent(text.trim(), language ?? "pl", tone ?? "standard");
 
     // Deduct 1 credit after successful generation
     await deductCredit(supabase, user.id);

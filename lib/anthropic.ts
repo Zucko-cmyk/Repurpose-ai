@@ -5,6 +5,17 @@ function getClient() {
   return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 }
 
+const TONE_INSTRUCTIONS: Record<string, string> = {
+  standard:     "Use a clear, informative, and balanced tone. Present the content naturally.",
+  kontrowersja: "Take a bold, provocative stance. Challenge common beliefs, use strong opinions, create healthy controversy that sparks debate. Start with a statement that will shock or surprise.",
+  ranking:      "Structure ALL content as rankings, top lists, or countdowns (e.g. Top 5, #1 reason, ranked from worst to best). Use numbers prominently.",
+  drama:        "Tell it as a gripping story with tension, conflict, and resolution. Use narrative arcs, cliffhangers, and emotional hooks. Make the reader feel the drama.",
+  dyskusja:     "Present multiple sides of the argument. Ask provocative questions. Invite the audience to share their opinion. Structure as a debate with pros and cons.",
+  inspiracja:   "Be uplifting, motivational, and empowering. Use powerful quotes style, actionable insights, and end with a strong call to believe and act.",
+  edukacja:     "Be the expert teacher. Use step-by-step breakdowns, explain the 'why', use analogies, bullet points for clarity. Make complex things simple.",
+  humor:        "Be witty, funny, and use irony or satire. Use unexpected twists, playful language, and self-deprecating humor where appropriate. Make people smile while delivering value.",
+};
+
 const LANGUAGE_NAMES: Record<string, string> = {
   pl: "Polish",
   en: "English",
@@ -15,15 +26,19 @@ const LANGUAGE_NAMES: Record<string, string> = {
   uk: "Ukrainian",
 };
 
-export async function repurposeContent(sourceText: string, language: string = "pl"): Promise<RepurposeResult> {
+export async function repurposeContent(sourceText: string, language: string = "pl", tone: string = "standard"): Promise<RepurposeResult> {
   const languageName = LANGUAGE_NAMES[language] ?? "Polish";
+  const toneInstruction = TONE_INSTRUCTIONS[tone] ?? TONE_INSTRUCTIONS.standard;
 
-  const prompt = `You are an expert content repurposing specialist. Your job is to transform source content into multiple social media formats while PRESERVING the original tone, key insights, and unique value of the source material.
+  const prompt = `You are an expert content repurposing specialist. Your job is to transform source content into multiple social media formats.
 
 SOURCE CONTENT:
 ${sourceText}
 
+CONTENT STYLE / TONE: ${toneInstruction}
+
 IMPORTANT: Generate ALL output exclusively in ${languageName}. Regardless of the language of the source content, every word of the output must be in ${languageName}.
+Apply the chosen content style consistently across ALL formats.
 
 Generate the following 5 formats. Return ONLY valid JSON, no markdown, no extra text.
 
